@@ -1,0 +1,208 @@
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router';
+import { ImageInput } from '../../Inputs/ImageInput';
+import { TextInput } from '../../Inputs/TextInput';
+import SectionWrap from '../../SectionWrap';
+
+const EventsSection = ({
+  data,
+  setData,
+  sectionTitle,
+  setSectionTitle,
+  enqueueImageUpload,
+  buttonColor,
+}) => {
+  const navigate = useNavigate();
+  const eventImageRefs = useRef({});
+
+  useEffect(() => {
+    Object.keys(data || {}).forEach((key) => {
+      if (!eventImageRefs.current[key]) {
+        eventImageRefs.current[key] = React.createRef();
+      }
+    });
+    Object.keys(eventImageRefs.current).forEach((key) => {
+      if (!data[key]) {
+        delete eventImageRefs.current[key];
+      }
+    });
+  }, [data]);
+
+  const handleEventChange = (key, field, value) => {
+    setData((prev) => {
+      const updated = { ...prev };
+      updated[key] = {
+        ...updated[key],
+        [field === 'description' ? 'abstract' : field]: value,
+        thumbnail: {
+          ...updated[key].thumbnail,
+          title: field === 'title' ? value : updated[key].title,
+        },
+      };
+      return updated;
+    });
+  };
+
+  const handleEventImageUpload = (key, file) => {
+    if (!(file instanceof File)) return;
+    const tempUrl = URL.createObjectURL(file);
+
+    setData((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        thumbnail: {
+          ...prev[key].thumbnail,
+          src: tempUrl,
+        },
+      },
+    }));
+
+    enqueueImageUpload(
+      `main_pages.event_overviews.${key}.thumbnail.src`,
+      `main_pages/event_overviews/${key}/thumbnail_${Date.now()}.jpg`, // Added timestamp for uniqueness
+      file
+    );
+  };
+
+  const addEvent = () => {
+    const newKey = `event_${new Date().getTime()}`;
+    setData((prev) => ({
+      ...prev,
+      [newKey]: {
+        title: '',
+        abstract: '',
+        thumbnail: {
+          src: '',
+          alt: '',
+          caption: '',
+        },
+        started_time: new Date(),
+      },
+    }));
+  };
+
+  const deleteEvent = (key) => {
+    setData((prev) => {
+      const updated = { ...prev };
+      delete updated[key];
+      return updated;
+    });
+  };
+
+  return (
+    <SectionWrap className="w-full" borderColor={buttonColor}>
+      <TextInput
+        className="w-full pt-20 font-bold text-[2.5rem] text-primary-title text-center outline-none"
+        value={sectionTitle}
+        onChange={(e) => setSectionTitle(e.target.value)}
+        placeholder="Nhập tiêu đề mục sự kiện"
+      />
+      <div className="w-full flex justify-center mb-8">
+        <button
+          onClick={addEvent}
+          className="py-2 px-6 rounded-full cursor-pointer font-semibold bg-secondary text-secondary-title text-base md:text-lg"
+        >
+          Thêm sự kiện
+        </button>
+      </div>
+
+      <div className="w-full px-2 sm:px-4">
+        {Object.entries(data || {})
+          .map(([key, event]) => ({
+            key,
+            title: event.title,
+            description: event.abstract,
+            imageUrl: event?.thumbnail?.src,
+            started_time: event.started_time,
+          }))
+          .sort((a, b) => new Date(b.started_time) - new Date(a.started_time))
+          .map(({ key, title, description, imageUrl }) => (
+            <div
+              key={key}
+              className="w-full mt-12 flex flex-col md:flex-row relative"
+            >
+              <div className="w-full md:w-1/2 h-80 md:h-84 px-2 md:px-4 mb-4 md:mb-0">
+                <ImageInput
+                  handleImageUpload={(e) =>
+                    handleEventImageUpload(key, e.target.files[0])
+                  }
+                  section="event"
+                  top="top-2"
+                  className="w-full h-full bg-cover bg-center rounded-lg"
+                  style={{
+                    backgroundImage: `url("${
+                      imageUrl ||
+                      'https://blog.photobucket.com/hubfs/upload_pics_online.png'
+                    }")`,
+                  }}
+                />
+              </div>
+              <div className="w-full md:w-1/2 h-auto px-2 md:px-4 flex flex-col">
+                <TextInput
+                  className="w-full font-bold text-xl md:text-2xl text-primary-title outline-none"
+                  value={title}
+                  onChange={(e) =>
+                    handleEventChange(key, 'title', e.target.value)
+                  }
+                  placeholder="Nhập tiêu đề sự kiện"
+                />
+                <TextInput
+                  type="textarea"
+                  className="w-full text-base md:text-base/5 py-4 md:py-6 text-primary-paragraph outline-none resize-none"
+                  value={description}
+                  onChange={(e) =>
+                    handleEventChange(key, 'description', e.target.value)
+                  }
+                  placeholder="Nhập mô tả sự kiện"
+                  rows="5"
+                />
+                <button
+                  className="py-2 px-5 rounded-full cursor-pointer font-semibold text-secondary-title mt-2 text-sm md:text-base w-fit"
+                  style={{ backgroundColor: buttonColor }}
+                  onClick={() =>
+                    navigate('/edit-content', {
+                      state: { id: key, title, thumbnail: imageUrl },
+                    })
+                  }
+                >
+                  Tìm hiểu thêm
+                </button>
+              </div>
+              <button
+                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full cursor-pointer z-10"
+                onClick={() => deleteEvent(key)}
+              >
+                <svg
+                  className="w-5 h-5 md:w-6 md:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          ))}
+      </div>
+    </SectionWrap>
+  );
+};
+
+EventsSection.propTypes = {
+  data: PropTypes.object.isRequired,
+  setData: PropTypes.func.isRequired,
+  sectionTitle: PropTypes.string,
+  setSectionTitle: PropTypes.func.isRequired,
+  enqueueImageUpload: PropTypes.func.isRequired,
+  buttonColor: PropTypes.string,
+};
+
+export default EventsSection;
