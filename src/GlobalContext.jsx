@@ -312,8 +312,8 @@ export const GlobalProvider = ({ children }) => {
       const finalGlobalData = createFinalData(baseGlobalUpdate, updatedGlobal);
       const finalMainData = createFinalData(baseMainUpdate, updatedMain);
 
-      const globalRef = doc(db, 'Global', 'components');
-      const mainRef = doc(db, 'Main pages', 'components');
+      const globalRef = doc(db, 'Global_2', 'components');
+      const mainRef = doc(db, 'Main_pages_2', 'components');
 
       console.log('Saving event_overviews:', finalMainData.event_overviews);
       console.log('Saving activity_history:', finalMainData.activity_history);
