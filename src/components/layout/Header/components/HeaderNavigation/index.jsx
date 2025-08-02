@@ -13,27 +13,27 @@ const HeaderNavigation = ({ page, globalData }) => {
           {
             id: 'page_0',
             name: 'Trang chủ',
-            url: '/Admin-Canary-Demo/',
+            url: '/Admin-Canary/',
           },
           {
             id: 'page_1',
             name: 'Về Canary',
-            url: '/Admin-Canary-Demo/#/about',
+            url: '/Admin-Canary/#/about',
           },
           {
             id: 'page_2',
             name: 'Sự kiện',
-            url: '/Admin-Canary-Demo/#/events',
+            url: '/Admin-Canary/#/events',
           },
           {
             id: 'page_3',
             name: 'Câu chuyện',
-            url: '/Admin-Canary-Demo/#/stories',
+            url: '/Admin-Canary/#/stories',
           },
           {
             id: 'page_4',
             name: 'Ủng hộ',
-            url: '/Admin-Canary-Demo/#/donate',
+            url: '/Admin-Canary/#/donate',
           },
         ]
   );
@@ -54,7 +54,7 @@ const HeaderNavigation = ({ page, globalData }) => {
                 href={nav.url}
                 className={
                   page === nav.url.split('#/')[1] ||
-                  (page === 'home' && nav.url === '/Admin-Canary-Demo/')
+                  (page === 'home' && nav.url === '/Admin-Canary/')
                     ? 'text-secondary font-bold hover:text-secondary-hover text-sm lg:text-base'
                     : 'hover:text-primary-hover text-sm lg:text-base'
                 }
@@ -85,7 +85,7 @@ const HeaderNavigation = ({ page, globalData }) => {
                     onClick={() => setIsDropdownOpen(false)}
                     className={
                       page === nav.url.split('#/')[1] ||
-                      (page === 'home' && nav.url === '/Admin-Canary-Demo/')
+                      (page === 'home' && nav.url === '/Admin-Canary/')
                         ? 'text-secondary font-bold hover:text-secondary-hover text-sm'
                         : 'hover:text-primary-hover text-sm'
                     }

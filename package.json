@@ -1,6 +1,6 @@
 {
-  "name": "admin-canary-demo",
-  "homepage": "https://psworks-2025.github.io/Admin-Canary-Demo/",
+  "name": "admin-canary",
+  "homepage": "https://psworks-2025.github.io/Admin-Canary/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
